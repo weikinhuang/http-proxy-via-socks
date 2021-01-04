@@ -1,0 +1,12 @@
+*
+
+!.npmrc
+!.eslintignore
+!.eslintrc.js
+!container
+!jest.config.js
+!package-lock.json
+!package.json
+!src
+!tsconfig.json
+!LICENSE
