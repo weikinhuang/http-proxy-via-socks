@@ -40,10 +40,20 @@ export async function request(req: http.IncomingMessage, res: http.ServerRespons
 
   logger.debug({ channel: 'request', message: 'request received', host: uri.hostname, proxied });
 
-  // conditionally forward through socks proxy
-  if (proxied) {
-    return _request(uri, req, res, new SocksProxyAgent(upstream));
-  } else {
-    return _request(uri, req, res);
+  try {
+    // conditionally forward through socks proxy
+    if (proxied) {
+      return _request(uri, req, res, new SocksProxyAgent(upstream));
+    } else {
+      return _request(uri, req, res);
+    }
+  } catch (e) {
+    logger.error({ channel: 'request', message: e.message, stack: e.stack });
+    try {
+      res.writeHead(500);
+      res.end('Connection error\n');
+    } catch {
+      // empty
+    }
   }
 }

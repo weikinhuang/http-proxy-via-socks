@@ -44,28 +44,32 @@ export async function connect(req: http.IncomingMessage, reqSocket: Socket, head
     } else {
       s = connectPassthrough(uri);
     }
+
+    reqSocket.on('error', (e) => {
+      logger.error({ channel: 'connect', message: e.message, stack: e.stack });
+      if (s) {
+        s.destroy(e);
+      }
+    });
+
+    s.on('error', (e) => {
+      logger.error({ channel: 'connect', message: e.message, stack: e.stack });
+      reqSocket.destroy(e);
+    });
+
+    s.pipe(reqSocket);
+    reqSocket.pipe(s);
+
+    s.write(head);
+    reqSocket.write(`HTTP/${req.httpVersion} 200 Connection established\r\n\r\n`);
+    s.resume();
   } catch (e) {
     logger.error({ channel: 'connect', message: e.message, stack: e.stack });
-    reqSocket.destroy(e);
-    return;
-  }
 
-  reqSocket.on('error', (e) => {
-    logger.error({ channel: 'connect', message: e.message, stack: e.stack });
-    if (s) {
-      s.destroy(e);
+    try {
+      reqSocket.destroy(e);
+    } catch {
+      // empty
     }
-  });
-
-  s.on('error', (e) => {
-    logger.error({ channel: 'connect', message: e.message, stack: e.stack });
-    reqSocket.destroy(e);
-  });
-
-  s.pipe(reqSocket);
-  reqSocket.pipe(s);
-
-  s.write(head);
-  reqSocket.write(`HTTP/${req.httpVersion} 200 Connection established\r\n\r\n`);
-  s.resume();
+  }
 }
