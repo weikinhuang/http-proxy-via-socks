@@ -1,5 +1,5 @@
 import * as http from 'http';
-import { port } from './lib/config';
+import { listenHost, listenPort } from './lib/config';
 import { connect } from './lib/connect';
 import logger from './lib/logger';
 import { request } from './lib/request';
@@ -14,7 +14,7 @@ export default async function main(): Promise<void> {
   // for http
   server.addListener('request', request);
 
-  server.listen(port, () => {
-    logger.notice({ channel: 'global', message: `application ready on port ${port}` });
+  server.listen(listenPort, listenHost, () => {
+    logger.notice({ channel: 'global', message: `application ready on ${listenHost}:${listenPort}` });
   });
 }

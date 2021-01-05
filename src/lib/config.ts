@@ -1,7 +1,10 @@
+import { isIP } from 'net';
+
 // env vars
 
-// operator
-export const port = parseInt(process.env.PORT || '9090', 10) || 9090;
+// server
+export const listenHost = isIP(process.env.LISTEN_HOST || '') ? process.env.LISTEN_HOST : '0.0.0.0';
+export const listenPort = parseInt(process.env.PORT || '9090', 10) || 9090;
 
 // application
 export const proxyDomains = ((patterns: string) => {
