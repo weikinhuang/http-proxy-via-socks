@@ -68,7 +68,7 @@ COPY --from=compile /tmp/dist $APP_ROOT/src
 
 USER nobody
 
-LABEL   description="nfs-pv-provisioner: Kubernetes operator to provision directories on nfs servers based on PV resources" \
+LABEL   description="http-proxy-via-socks: Conditionally forward requests for HTTP_PROXY and HTTPS_PROXY" \
         maintainer="Wei Kin Huang"
 
 ENTRYPOINT [ "tini", "-s", "-g", "--" ]
