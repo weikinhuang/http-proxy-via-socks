@@ -19,6 +19,7 @@ services:
       - all
     environment:
       LOG_LEVEL: debug
+      # PAC_FILE: /proxy.pac
       PORT: 9090
     env_file:
       - ./config.env
@@ -27,3 +28,4 @@ services:
       - ./nodemon.json:/opt/app/nodemon.json:ro
       - ./package.json:/opt/app/package.json:ro
       - ./tsconfig.json:/opt/app/tsconfig.json:ro
+      # - ./proxy.pac:/proxy.pac:ro

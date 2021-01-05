@@ -1,8 +1,7 @@
 import * as http from 'http';
 import * as url from 'url';
 import { SocksProxyAgent } from 'socks-proxy-agent';
-import { upstream } from './config';
-import { shouldProxy } from './util';
+import { DIRECT_PROXY_MODE, getProxy } from './util';
 import logger from './logger';
 
 function _request(uri: url.URL, req: http.IncomingMessage, res: http.ServerResponse, agent?: http.Agent | null): void {
@@ -36,14 +35,19 @@ function _request(uri: url.URL, req: http.IncomingMessage, res: http.ServerRespo
 
 export async function request(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
   const uri = new url.URL(req.url);
-  const proxied = await shouldProxy(uri.hostname);
+  const proxy = await getProxy(`http://${uri.hostname}`, uri.hostname.split(':')[0]);
 
-  logger.debug({ channel: 'request', message: 'request received', host: uri.hostname, proxied });
+  logger.debug({
+    channel: 'request',
+    message: 'request received',
+    host: uri.hostname,
+    proxy: proxy !== DIRECT_PROXY_MODE ? `${proxy.host}:${proxy.port}` : '',
+  });
 
   try {
     // conditionally forward through socks proxy
-    if (proxied) {
-      return _request(uri, req, res, new SocksProxyAgent(upstream));
+    if (proxy !== DIRECT_PROXY_MODE) {
+      return _request(uri, req, res, new SocksProxyAgent(proxy));
     } else {
       return _request(uri, req, res);
     }

@@ -2,11 +2,10 @@ import * as http from 'http';
 import { Socket, connect as netConnect, isIP } from 'net';
 import * as url from 'url';
 import { SocksClient, SocksProxy } from 'socks';
-import { upstream } from './config';
-import { shouldProxy } from './util';
+import { DIRECT_PROXY_MODE, getProxy } from './util';
 import logger from './logger';
 
-async function connectSocks(uri: url.URL): Promise<Socket> {
+async function connectSocks(upstream: SocksProxy, uri: url.URL): Promise<Socket> {
   const isUpstreamIp = isIP(upstream.host);
 
   const { socket } = await SocksClient.createConnection({
@@ -35,12 +34,17 @@ export async function connect(req: http.IncomingMessage, reqSocket: Socket, head
 
   let s: Socket;
   try {
-    const proxied = await shouldProxy(uri.hostname);
+    const proxy = await getProxy(`https://${uri.hostname}`, uri.hostname.split(':')[0]);
 
-    logger.debug({ channel: 'connect', message: 'connect received', host: uri.hostname, proxied });
+    logger.debug({
+      channel: 'connect',
+      message: 'connect received',
+      host: uri.hostname,
+      proxy: proxy !== DIRECT_PROXY_MODE ? `${proxy.host}:${proxy.port}` : '',
+    });
 
-    if (proxied) {
-      s = await connectSocks(uri);
+    if (proxy !== DIRECT_PROXY_MODE) {
+      s = await connectSocks(proxy, uri);
     } else {
       s = connectPassthrough(uri);
     }

@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs';
 import { isIP } from 'net';
 
 // env vars
@@ -18,6 +19,20 @@ export const proxyDomains = ((patterns: string) => {
     'i',
   );
 })(process.env.PROXY_DOMAINS || '.+');
+
+export const pacFile = ((filepath: string) => {
+  if (!filepath) {
+    return '';
+  }
+
+  const pacFile = readFileSync(filepath, 'utf8');
+
+  if (!pacFile || !/function FindProxyForURL\(url, host\) {/.test(pacFile)) {
+    throw new Error('Invalid proxy pac file');
+  }
+
+  return pacFile;
+})(process.env.PAC_FILE || '');
 
 export const upstream = ((upstream: string) => {
   if (!/^socks(4|4a|5):\/\/.+?:\d+$/.test(upstream)) {
