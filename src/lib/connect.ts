@@ -4,6 +4,7 @@ import * as url from 'url';
 import { SocksClient, SocksProxy } from 'socks';
 import { upstream } from './config';
 import { shouldProxy } from './util';
+import logger from './logger';
 
 async function connectSocks(uri: url.URL): Promise<Socket> {
   const isUpstreamIp = isIP(upstream.host);
@@ -34,24 +35,31 @@ export async function connect(req: http.IncomingMessage, reqSocket: Socket, head
 
   let s: Socket;
   try {
-    if (shouldProxy(uri.hostname)) {
+    const proxied = await shouldProxy(uri.hostname);
+
+    logger.debug({ channel: 'connect', message: 'connect received', host: uri.hostname, proxied });
+
+    if (proxied) {
       s = await connectSocks(uri);
     } else {
       s = connectPassthrough(uri);
     }
   } catch (e) {
+    logger.error({ channel: 'connect', message: e.message, stack: e.stack });
     reqSocket.destroy(e);
     return;
   }
 
-  reqSocket.on('error', (err) => {
+  reqSocket.on('error', (e) => {
+    logger.error({ channel: 'connect', message: e.message, stack: e.stack });
     if (s) {
-      s.destroy(err);
+      s.destroy(e);
     }
   });
 
-  s.on('error', (err) => {
-    reqSocket.destroy(err);
+  s.on('error', (e) => {
+    logger.error({ channel: 'connect', message: e.message, stack: e.stack });
+    reqSocket.destroy(e);
   });
 
   s.pipe(reqSocket);

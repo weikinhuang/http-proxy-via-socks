@@ -1,5 +1,6 @@
 import { proxyDomains } from './config';
 
-export function shouldProxy(host: string): boolean {
+export async function shouldProxy(host: string): Promise<boolean> {
+  // @todo: replace with pac file parser
   return proxyDomains.test(host);
 }

@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+  # the application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=development
+    command:
+      - ./node_modules/.bin/nodemon
+      - -L
+    ports:
+      - 9090:9090
+    user: 65534:65534
+    read_only: true
+    cap_drop:
+      - all
+    environment:
+      LOG_LEVEL: debug
+      PORT: 9090
+    env_file:
+      - ./config.env
+    volumes:
+      - ./src:/opt/app/src:ro
+      - ./nodemon.json:/opt/app/nodemon.json:ro
+      - ./package.json:/opt/app/package.json:ro
+      - ./tsconfig.json:/opt/app/tsconfig.json:ro

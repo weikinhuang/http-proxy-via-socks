@@ -3,6 +3,7 @@ import * as url from 'url';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import { upstream } from './config';
 import { shouldProxy } from './util';
+import logger from './logger';
 
 function _request(uri: url.URL, req: http.IncomingMessage, res: http.ServerResponse, agent?: http.Agent | null): void {
   const proxy = http.request({
@@ -14,11 +15,13 @@ function _request(uri: url.URL, req: http.IncomingMessage, res: http.ServerRespo
     agent,
   });
 
-  req.on('error', (err) => {
-    proxy.destroy(err);
+  req.on('error', (e) => {
+    logger.error({ channel: 'request', message: e.message, stack: e.stack });
+    proxy.destroy(e);
   });
 
-  proxy.on('error', (_err) => {
+  proxy.on('error', (e) => {
+    logger.error({ channel: 'request', message: e.message, stack: e.stack });
     res.writeHead(500);
     res.end('Connection error\n');
   });
@@ -31,11 +34,14 @@ function _request(uri: url.URL, req: http.IncomingMessage, res: http.ServerRespo
   req.pipe(proxy);
 }
 
-export function request(req: http.IncomingMessage, res: http.ServerResponse): void {
+export async function request(req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
   const uri = new url.URL(req.url);
+  const proxied = await shouldProxy(uri.hostname);
+
+  logger.debug({ channel: 'request', message: 'request received', host: uri.hostname, proxied });
 
   // conditionally forward through socks proxy
-  if (shouldProxy(uri.hostname)) {
+  if (proxied) {
     return _request(uri, req, res, new SocksProxyAgent(upstream));
   } else {
     return _request(uri, req, res);
