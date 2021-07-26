@@ -50,14 +50,26 @@ export async function connect(req: http.IncomingMessage, reqSocket: Socket, head
     }
 
     reqSocket.on('error', (e) => {
-      logger.error({ channel: 'connect', message: e.message, stack: e.stack });
+      logger.error({
+        channel: 'connect',
+        message: e.message,
+        host: uri.hostname,
+        proxy: proxy !== DIRECT_PROXY_MODE ? `${proxy.host}:${proxy.port}` : '',
+        stack: e.stack,
+      });
       if (s) {
         s.destroy(e);
       }
     });
 
     s.on('error', (e) => {
-      logger.error({ channel: 'connect', message: e.message, stack: e.stack });
+      logger.error({
+        channel: 'connect',
+        message: e.message,
+        host: uri.hostname,
+        proxy: proxy !== DIRECT_PROXY_MODE ? `${proxy.host}:${proxy.port}` : '',
+        stack: e.stack,
+      });
       reqSocket.destroy(e);
     });
 
@@ -68,7 +80,7 @@ export async function connect(req: http.IncomingMessage, reqSocket: Socket, head
     reqSocket.write(`HTTP/${req.httpVersion} 200 Connection established\r\n\r\n`);
     s.resume();
   } catch (e) {
-    logger.error({ channel: 'connect', message: e.message, stack: e.stack });
+    logger.error({ channel: 'connect', message: e.message, host: uri.hostname, stack: e.stack });
 
     try {
       reqSocket.destroy(e);
