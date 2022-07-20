@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "npm": {
-    "bumpVersion": "patch"
-  }
+  "extends": [
+    "local>buildtools/renovate-configs//configs/post-upgrade"
+  ]
 }
