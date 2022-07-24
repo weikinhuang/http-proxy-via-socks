@@ -4,14 +4,15 @@ import { connect } from './lib/connect';
 import logger from './lib/logger';
 import { request } from './lib/request';
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export default async function main(): Promise<void> {
   const server = http.createServer(() => {
     // empty
   });
 
-  // for https
+  // for h ttps
   server.addListener('connect', connect);
-  // for http
+  // for h ttp
   server.addListener('request', request);
 
   server.listen(listenPort, listenHost, () => {

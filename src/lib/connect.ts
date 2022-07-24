@@ -1,7 +1,9 @@
-import * as http from 'http';
-import { Socket, connect as netConnect, isIP } from 'net';
+import type * as http from 'http';
+import type { Socket } from 'net';
+import { connect as netConnect, isIP } from 'net';
 import * as url from 'url';
-import { SocksClient, SocksProxy } from 'socks';
+import type { SocksProxy } from 'socks';
+import { SocksClient } from 'socks';
 import { DIRECT_PROXY_MODE, getProxy } from './util';
 import logger from './logger';
 
@@ -80,10 +82,10 @@ export async function connect(req: http.IncomingMessage, reqSocket: Socket, head
     reqSocket.write(`HTTP/${req.httpVersion} 200 Connection established\r\n\r\n`);
     s.resume();
   } catch (e) {
-    logger.error({ channel: 'connect', message: e.message, host: uri.hostname, stack: e.stack });
+    logger.error({ channel: 'connect', message: (e as Error).message, host: uri.hostname, stack: (e as Error).stack });
 
     try {
-      reqSocket.destroy(e);
+      reqSocket.destroy(e as Error);
     } catch {
       // empty
     }

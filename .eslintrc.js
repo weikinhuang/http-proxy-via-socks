@@ -4,16 +4,15 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:node/recommended',
     'prettier',
-    'plugin:jest/recommended',
-    'plugin:jest/style',
   ],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
   parserOptions: {
-    ecmaVersion: 2019,
-    sourceType: 'module',
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json', './tsconfig.eslint.json'],
   },
   globals: {
     process: false,
@@ -34,14 +33,21 @@ module.exports = {
     },
   ],
   rules: {
+    '@typescript-eslint/consistent-type-imports': 'error',
+    '@typescript-eslint/consistent-type-exports': 'error',
     '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-misused-promises': [
+      'error',
+      {
+        checksVoidReturn: false,
+      },
+    ],
     '@typescript-eslint/no-unused-vars': 'off',
     'dot-notation': 'error',
     eqeqeq: ['error', 'allow-null'],
     'no-console': 'warn',
-    'no-dupe-class-members': 'off',
     'no-empty': ['error', { allowEmptyCatch: true }],
     'no-implicit-coercion': [
       'error',
@@ -60,6 +66,7 @@ module.exports = {
         tryExtensions: ['.js', '.json', '.node', '.ts'],
       },
     ],
+    'node/no-unpublished-import': 'off',
     'node/no-unsupported-features/es-syntax': [
       'error',
       {

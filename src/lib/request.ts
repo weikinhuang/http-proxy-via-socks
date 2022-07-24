@@ -72,10 +72,10 @@ export async function request(req: http.IncomingMessage, res: http.ServerRespons
     } catch (e) {
       logger.error({
         channel: 'request',
-        message: e.message,
+        message: (e as Error).message,
         host: uri.hostname,
         proxy: proxy !== DIRECT_PROXY_MODE ? `${proxy.host}:${proxy.port}` : '',
-        stack: e.stack,
+        stack: (e as Error).stack,
       });
       try {
         res.writeHead(500);
@@ -85,6 +85,6 @@ export async function request(req: http.IncomingMessage, res: http.ServerRespons
       }
     }
   } catch (e) {
-    logger.error({ channel: 'request', message: e.message, host: uri.hostname, stack: e.stack });
+    logger.error({ channel: 'request', message: (e as Error).message, host: uri.hostname, stack: (e as Error).stack });
   }
 }

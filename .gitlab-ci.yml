@@ -1,0 +1,23 @@
+stages:
+  - test
+
+before_script:
+  # start: fix gitlab-ci's umask 0000 issue
+  - umask 0022
+  - find . ! -path . ! -path './.git' ! -path './.git/*' -exec chmod go-w {} +
+  # end: fix gitlab-ci's umask 0000 issue
+
+test:
+  stage: test
+  image: node:18-bullseye-slim
+  script:
+    - npm ci --quiet >/dev/null
+    - npm run -s lint
+    - npm run -s test
+    - npm run -s build
+
+hadolint:
+  stage: test
+  image: $CI_REGISTRY/buildtools/common-lint:latest
+  script:
+    - hadolint Dockerfile
