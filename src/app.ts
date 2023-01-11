@@ -10,9 +10,9 @@ export default async function main(): Promise<void> {
     // empty
   });
 
-  // for h ttps
+  // for https
   server.addListener('connect', connect);
-  // for h ttp
+  // for http
   server.addListener('request', request);
 
   server.listen(listenPort, listenHost, () => {
