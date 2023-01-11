@@ -21,6 +21,7 @@ services:
       LOG_LEVEL: debug
       # PAC_FILE: /proxy.pac
       PORT: 9090
+      CONNECT_TIMEOUT: 30000
     env_file:
       - ./config.env
     volumes:

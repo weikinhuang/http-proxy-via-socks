@@ -7,6 +7,9 @@ import { isIP } from 'net';
 export const listenHost = isIP(process.env.LISTEN_HOST || '') ? process.env.LISTEN_HOST : '0.0.0.0';
 export const listenPort = parseInt(process.env.PORT || '9090', 10) || 9090;
 
+// connection
+export const socksConnectTimeout = parseInt(process.env.CONNECT_TIMEOUT || '30000', 10) || 30000;
+
 // application
 export const proxyDomains = ((patterns: string) => {
   return new RegExp(

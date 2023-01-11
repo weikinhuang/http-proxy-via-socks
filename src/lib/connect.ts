@@ -6,25 +6,32 @@ import type { SocksProxy } from 'socks';
 import { SocksClient } from 'socks';
 import { DIRECT_PROXY_MODE, getProxy } from './util';
 import logger from './logger';
+import { socksConnectTimeout } from './config';
 
 async function connectSocks(upstream: SocksProxy, uri: url.URL): Promise<Socket> {
   const isUpstreamIp = isIP(upstream.host);
 
-  const { socket } = await SocksClient.createConnection({
-    proxy: {
-      type: upstream.type,
-      port: upstream.port,
-      host: isUpstreamIp ? undefined : upstream.host,
-      ipaddress: !isUpstreamIp ? undefined : upstream.host,
-    } as SocksProxy,
-    destination: {
-      host: uri.hostname,
-      port: parseInt(uri.port || '443', 10),
-    },
-    command: 'connect',
-  });
+  try {
+    const { socket } = await SocksClient.createConnection({
+      proxy: {
+        type: upstream.type,
+        port: upstream.port,
+        host: isUpstreamIp ? undefined : upstream.host,
+        ipaddress: !isUpstreamIp ? undefined : upstream.host,
+      } as SocksProxy,
+      destination: {
+        host: uri.hostname,
+        port: parseInt(uri.port || '443', 10),
+      },
+      command: 'connect',
+      timeout: socksConnectTimeout,
+    });
 
-  return socket;
+    return socket;
+  } catch (e) {
+    logger.error({ channel: 'connect', message: (e as Error).message, host: uri.hostname, stack: (e as Error).stack });
+  }
+  return null;
 }
 
 function connectPassthrough(uri: url.URL): Socket {
@@ -45,10 +52,27 @@ export async function connect(req: http.IncomingMessage, reqSocket: Socket, head
       proxy: proxy !== DIRECT_PROXY_MODE ? `${proxy.host}:${proxy.port}` : '',
     });
 
-    if (proxy !== DIRECT_PROXY_MODE) {
-      s = await connectSocks(proxy, uri);
-    } else {
-      s = connectPassthrough(uri);
+    try {
+      if (proxy !== DIRECT_PROXY_MODE) {
+        s = await connectSocks(proxy, uri);
+      } else {
+        s = connectPassthrough(uri);
+      }
+    } catch (e) {
+      logger.error({
+        channel: 'connect',
+        message: (e as Error).message,
+        host: uri.hostname,
+        stack: (e as Error).stack,
+      });
+    }
+    if (!s) {
+      try {
+        reqSocket.end();
+      } catch {
+        // empty
+      }
+      return;
     }
 
     reqSocket.on('error', (e) => {
