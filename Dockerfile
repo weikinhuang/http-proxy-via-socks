@@ -1,5 +1,5 @@
 # build and test application
-FROM node:18-buster-slim as compile
+FROM node:18-bullseye-slim as compile
 
 ENV NODE_ENV=development
 
@@ -18,7 +18,7 @@ RUN set -ex \
     && find . -name '*.ts' -exec rm -rf {} \;
 
 # install node modules
-FROM node:18-buster-slim as nodemodules
+FROM node:18-bullseye-slim as nodemodules
 
 WORKDIR /tmp
 COPY package.json package-lock.json /tmp/
@@ -27,7 +27,7 @@ ENV NODE_ENV=${NODE_ENV}
 RUN set -ex \
     && npm ci
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 # Install dependencies
 RUN set -ex \

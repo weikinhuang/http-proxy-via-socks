@@ -1,6 +1,31 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "local>buildtools/renovate-configs//configs/post-upgrade"
+    "local>buildtools/renovate-configs//configs/post-upgrade",
+    "local>buildtools/renovate-configs//configs/docker",
+    "local>buildtools/renovate-configs//configs/lts",
+    "npm:unpublishSafe",
+    "config:js-app",
+    ":automergePatch"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "automergeType": "branch"
+  },
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        "node"
+      ],
+      "matchUpdateTypes": ["minor"],
+      "automerge": true
+    },
+    {
+      "groupName": "node dev dependencies",
+      "matchUpdateTypes": ["minor", "patch"],
+      "matchDepTypes": ["devDependencies"],
+      "automerge": true
+    }
   ]
 }
