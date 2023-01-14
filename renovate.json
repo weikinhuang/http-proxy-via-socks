@@ -16,6 +16,13 @@
   "packageRules": [
     {
       "matchPackageNames": [
+        "node",
+        "debian"
+      ],
+      "groupName": "node"
+    },
+    {
+      "matchPackageNames": [
         "node"
       ],
       "matchUpdateTypes": ["minor"],

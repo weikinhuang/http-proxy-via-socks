@@ -68,8 +68,12 @@ COPY --from=compile /tmp/dist $APP_ROOT/src
 
 USER nobody
 
-LABEL   description="http-proxy-via-socks: Conditionally forward requests for HTTP_PROXY and HTTPS_PROXY" \
-        maintainer="Wei Kin Huang"
-
 ENTRYPOINT [ "tini", "-s", "-g", "--" ]
 CMD [ "node", "--no-deprecation", "--enable-source-maps", "/opt/app/src/index.js" ]
+
+LABEL org.opencontainers.image.authors="Wei Kin Huang"
+LABEL org.opencontainers.image.description="Conditionally forward requests for HTTP_PROXY and HTTPS_PROXY"
+LABEL org.opencontainers.image.documentation="https://github.com/weikinhuang/http-proxy-via-socks"
+LABEL org.opencontainers.image.source="https://github.com/weikinhuang/http-proxy-via-socks"
+LABEL org.opencontainers.image.title="http-proxy-via-socks"
+LABEL org.opencontainers.image.vendor="Wei Kin Huang"
