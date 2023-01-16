@@ -34,5 +34,6 @@
       "matchDepTypes": ["devDependencies"],
       "automerge": true
     }
-  ]
+  ],
+  "postUpdateOptions": ["npmDedupe"]
 }
