@@ -29,7 +29,7 @@
     "winston": "3.8.2"
   },
   "devDependencies": {
-    "@types/jest": "29.4.1",
+    "@types/jest": "29.4.4",
     "@types/json5": "2.2.0",
     "@types/node": "18.15.3",
     "@types/winston": "2.4.4",
