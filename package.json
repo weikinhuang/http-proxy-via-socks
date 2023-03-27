@@ -31,7 +31,7 @@
   "devDependencies": {
     "@types/jest": "29.5.0",
     "@types/json5": "2.2.0",
-    "@types/node": "18.15.5",
+    "@types/node": "18.15.6",
     "@types/winston": "2.4.4",
     "@typescript-eslint/eslint-plugin": "5.56.0",
     "@typescript-eslint/parser": "5.56.0",
