@@ -1,5 +1,5 @@
 # build and test application
-FROM node:18-bullseye-slim as compile
+FROM node:20-bullseye-slim as compile
 
 ENV NODE_ENV=development
 
@@ -18,7 +18,7 @@ RUN set -ex \
     && find . -name '*.ts' -exec rm -rf {} \;
 
 # install node modules
-FROM node:18-bullseye-slim as nodemodules
+FROM node:20-bullseye-slim as nodemodules
 
 WORKDIR /tmp
 COPY package.json package-lock.json /tmp/
