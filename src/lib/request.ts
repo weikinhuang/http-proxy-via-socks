@@ -65,7 +65,7 @@ export async function request(req: http.IncomingMessage, res: http.ServerRespons
     try {
       // conditionally forward through socks proxy
       if (proxy !== DIRECT_PROXY_MODE) {
-        return _request(uri, req, res, new SocksProxyAgent(proxy));
+        return _request(uri, req, res, new SocksProxyAgent(`socks${proxy.type}://${proxy.host}:${proxy.port}`));
       } else {
         return _request(uri, req, res);
       }
