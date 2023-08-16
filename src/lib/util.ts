@@ -1,5 +1,6 @@
 import { createPacResolver } from 'pac-resolver';
 import type { FindProxyForURL } from 'pac-resolver';
+import { getQuickJS } from '@tootallnate/quickjs-emscripten';
 import { proxyDomains, pacFile, upstream } from './config';
 
 export const DIRECT_PROXY_MODE = Symbol('DIRECT');
@@ -9,9 +10,9 @@ interface SocksProxyConfig {
   port: number;
 }
 
-let findProxyForURL: FindProxyForURL;
+let findProxyForURLPromise: Promise<FindProxyForURL>;
 if (pacFile) {
-  findProxyForURL = createPacResolver(pacFile);
+  findProxyForURLPromise = Promise.all([getQuickJS()]).then(([qjs]) => createPacResolver(qjs, pacFile));
 }
 
 export async function getProxy(url: string, host: string): Promise<SocksProxyConfig | typeof DIRECT_PROXY_MODE> {
@@ -20,6 +21,7 @@ export async function getProxy(url: string, host: string): Promise<SocksProxyCon
   }
 
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_(PAC)_file
+  const findProxyForURL = await findProxyForURLPromise;
   const res = await findProxyForURL(url, host);
   if (/DIRECT/.test(res)) {
     return DIRECT_PROXY_MODE;
