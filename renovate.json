@@ -3,6 +3,7 @@
   "extends": [
     "local>buildtools/renovate-configs//configs/post-upgrade",
     "local>buildtools/renovate-configs//configs/docker",
+    "local>buildtools/renovate-configs//configs/docker-debian",
     "local>buildtools/renovate-configs//configs/lts",
     "npm:unpublishSafe",
     "config:js-app",
