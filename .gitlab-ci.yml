@@ -9,7 +9,7 @@ before_script:
 
 test:
   stage: test
-  image: node:20-bullseye-slim
+  image: node:20-bookworm-slim
   script:
     - npm ci --quiet >/dev/null
     - npm run -s lint
