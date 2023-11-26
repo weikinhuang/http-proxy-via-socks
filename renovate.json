@@ -2,8 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "local>buildtools/renovate-configs//configs/base",
-    "local>buildtools/renovate-configs//configs/docker-debian",
     "local>buildtools/renovate-configs//configs/docker",
+    "local>buildtools/renovate-configs//configs/docker-debian",
     "local>buildtools/renovate-configs//configs/helm",
     "local>buildtools/renovate-configs//configs/javascript",
     "local>buildtools/renovate-configs//configs/lts",
