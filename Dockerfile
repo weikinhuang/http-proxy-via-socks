@@ -1,5 +1,5 @@
 # build and test application
-FROM node:20-bookworm-slim as compile
+FROM node:20.10.0-bookworm-slim as compile
 
 ENV NODE_ENV=development
 
@@ -18,7 +18,7 @@ RUN set -ex \
     && find . -name '*.ts' -exec rm -rf {} \;
 
 # install node modules
-FROM node:20-bookworm-slim as nodemodules
+FROM node:20.10.0-bookworm-slim as nodemodules
 
 WORKDIR /tmp
 COPY package.json package-lock.json /tmp/
