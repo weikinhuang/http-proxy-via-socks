@@ -1,5 +1,9 @@
 stages:
+  - lint
   - test
+
+include:
+  - component: $CI_SERVER_HOST/buildtools/gitlab-tools/lint-dockerfile@main
 
 before_script:
   # start: fix gitlab-ci's umask 0000 issue
@@ -15,9 +19,3 @@ test:
     - npm run -s lint
     - npm run -s test
     - npm run -s build
-
-hadolint:
-  stage: test
-  image: $CI_REGISTRY/buildtools/common-lint:latest
-  script:
-    - hadolint Dockerfile
