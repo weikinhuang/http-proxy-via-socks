@@ -5,12 +5,6 @@ stages:
 include:
   - component: $CI_SERVER_HOST/buildtools/gitlab-tools/lint-dockerfile@main
 
-before_script:
-  # start: fix gitlab-ci's umask 0000 issue
-  - umask 0022
-  - find . ! -path . ! -path './.git' ! -path './.git/*' -exec chmod go-w {} +
-  # end: fix gitlab-ci's umask 0000 issue
-
 test:
   stage: test
   image: node:20.11.0-bookworm-slim
