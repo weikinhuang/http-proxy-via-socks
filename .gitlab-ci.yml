@@ -7,7 +7,7 @@ include:
 
 test:
   stage: test
-  image: node:20.11.0-bookworm-slim
+  image: node:20.11.1-bookworm-slim
   script:
     - npm ci --quiet >/dev/null
     - npm run -s lint
