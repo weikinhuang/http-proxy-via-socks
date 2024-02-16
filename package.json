@@ -1,7 +1,7 @@
 {
   "name": "http-proxy-via-socks",
   "description": "Conditionally forward requests for HTTP_PROXY and HTTPS_PROXY.",
-  "version": "4.6.1",
+  "version": "4.6.2",
   "author": "Wei Kin Huang",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "@tootallnate/quickjs-emscripten": "0.23.0",
-    "pac-resolver": "7.0.0",
+    "pac-resolver": "7.0.1",
     "socks": "2.7.3",
     "socks-proxy-agent": "7.0.0",
     "tslib": "2.6.2",
