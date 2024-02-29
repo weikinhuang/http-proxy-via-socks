@@ -8,11 +8,11 @@ ENV NODE_ENV=development
 WORKDIR /tmp
 COPY --link package.json package-lock.json /tmp/
 RUN --mount=type=cache,mode=0777,target=/tmp/.npm \
-    set -ex \
+    set -eux \
     && npm ci --cache /tmp/.npm --prefer-offline
 
 COPY --link . /tmp/
-RUN set -ex \
+RUN set -eux \
     && npm run lint \
     && npm run test \
     && npm run build \
@@ -28,7 +28,7 @@ COPY --link package.json package-lock.json /tmp/
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 RUN --mount=type=cache,mode=0777,target=/tmp/.npm \
-    set -ex \
+    set -eux \
     && npm ci --cache /tmp/.npm --prefer-offline
 
 FROM debian:bookworm-slim
@@ -54,7 +54,7 @@ RUN set -ex \
 
 # generate the node_modules directory
 ARG NODE_ENV=production
-ENV NODE_ENV          $NODE_ENV
+ENV NODE_ENV=${NODE_ENV}
 COPY --link /package.json /package-lock.json $APP_ROOT/
 COPY --link --from=nodemodules /tmp/node_modules $APP_ROOT/node_modules
 
