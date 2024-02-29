@@ -1,14 +1,17 @@
+# syntax=docker/dockerfile:1
+
 # build and test application
 FROM node:20.11.1-bookworm-slim as compile
 
 ENV NODE_ENV=development
 
 WORKDIR /tmp
-COPY package.json package-lock.json /tmp/
-RUN set -ex \
-    && npm ci
+COPY --link package.json package-lock.json /tmp/
+RUN --mount=type=cache,mode=0777,target=/tmp/.npm \
+    set -ex \
+    && npm ci --cache /tmp/.npm --prefer-offline
 
-COPY . /tmp/
+COPY --link . /tmp/
 RUN set -ex \
     && npm run lint \
     && npm run test \
@@ -21,11 +24,12 @@ RUN set -ex \
 FROM node:20.11.1-bookworm-slim as nodemodules
 
 WORKDIR /tmp
-COPY package.json package-lock.json /tmp/
+COPY --link package.json package-lock.json /tmp/
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
-RUN set -ex \
-    && npm ci
+RUN --mount=type=cache,mode=0777,target=/tmp/.npm \
+    set -ex \
+    && npm ci --cache /tmp/.npm --prefer-offline
 
 FROM debian:bookworm-slim
 
@@ -38,7 +42,7 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/*
 
 # from the official docker image for node
-COPY --from=nodemodules /usr/local/bin/node /usr/local/bin/node
+COPY --link --from=nodemodules /usr/local/bin/node /usr/local/bin/node
 
 # app variables
 ENV APP_ROOT          /opt/app
@@ -51,8 +55,8 @@ RUN set -ex \
 # generate the node_modules directory
 ARG NODE_ENV=production
 ENV NODE_ENV          $NODE_ENV
-COPY /package.json /package-lock.json $APP_ROOT/
-COPY --from=nodemodules /tmp/node_modules $APP_ROOT/node_modules
+COPY --link /package.json /package-lock.json $APP_ROOT/
+COPY --link --from=nodemodules /tmp/node_modules $APP_ROOT/node_modules
 
 # increase the libuv threadpool size
 # @see https://nodejs.org/api/cli.html#cli_uv_threadpool_size_size
@@ -64,7 +68,7 @@ ENV UV_THREADPOOL_SIZE  128
 WORKDIR $APP_ROOT
 
 # copy application
-COPY --from=compile /tmp/dist $APP_ROOT/src
+COPY --link --from=compile /tmp/dist $APP_ROOT/src
 
 USER nobody
 
