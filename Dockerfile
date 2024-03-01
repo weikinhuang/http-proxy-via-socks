@@ -7,8 +7,7 @@ ENV NODE_ENV=development
 
 WORKDIR /tmp
 COPY --link package.json package-lock.json /tmp/
-RUN --mount=type=cache,mode=0777,target=/tmp/.npm \
-    set -eux \
+RUN set -eux \
     && npm ci --cache /tmp/.npm --prefer-offline
 
 COPY --link . /tmp/
@@ -27,13 +26,13 @@ WORKDIR /tmp
 COPY --link package.json package-lock.json /tmp/
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
-RUN --mount=type=cache,mode=0777,target=/tmp/.npm \
-    set -eux \
+RUN set -eux \
     && npm ci --cache /tmp/.npm --prefer-offline
 
 FROM debian:bookworm-slim
 
 # Install dependencies
+ENV DEBIAN_FRONTEND=noninteractive
 RUN set -ex \
     && apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
