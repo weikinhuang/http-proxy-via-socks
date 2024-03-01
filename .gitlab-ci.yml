@@ -1,9 +1,13 @@
 stages:
   - lint
   - test
+  - build-image
 
 include:
   - component: $CI_SERVER_HOST/buildtools/gitlab-tools/lint-dockerfile@main
+  - component: $CI_SERVER_HOST/buildtools/gitlab-tools/build-oci-image@main
+    inputs:
+      version-cmd: jq .version -r package.json
 
 test:
   stage: test
@@ -13,3 +17,10 @@ test:
     - npm run -s lint
     - npm run -s test
     - npm run -s build
+
+build-oci-image:base:
+  variables:
+    OCI_BUILD_PLATFORM_AMD64: linux/amd64
+    OCI_BUILD_PLATFORM_ARM64v8: linux/arm64/v8
+  rules:
+    - if: $IMAGE_BUILD == "true"
